@@ -9,6 +9,8 @@ pillow = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
 npm = "*"
+coreapi = "*"
+vite = "*"
 
 [dev-packages]
 
