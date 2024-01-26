@@ -2,34 +2,36 @@ import { Link } from 'react-router-dom'
 
 export function Navigation() {
   return (
-    <div className='flex justify-between py-3'>
-        <div>
-          <Link to='/'>
-              <h1 className='font-bold text-3xl mb-3'>UniTracker</h1>
-          </Link>
-        </div>
-        <div className=''>
-          <a className=''>
-            <Link to=''>Notas</Link>
-          </a>
-          <a className=''>
-            <Link to=''>Calcular Promedio</Link>
-          </a>
-          <a className=''>
-            <Link to=''>Escala De Notas</Link>
-          </a>
-          <a className=''>
-            <Link to=''>Fechas</Link>
-          </a>
-        </div>
-        <div>
-          <a className=''>
-            <Link to='/'>Login</Link>
-          </a>
-          <button className='bg-emerald-500 px-3 py-2 rounded-lg'>
-            <Link to='/'>Register</Link>
-          </button>
-        </div>
+    <header className="flex flex-col sm:flex-row justify-between items-center px-16 h-[80px]">
+    <div className="flex items-center mb-3 sm:mb-0">
+      <Link to="/" className="text-black text-xl font-bold hover:text-gray-800">
+        <h1><span className="text-emerald-500">Uni</span>Tracker</h1>
+      </Link>
     </div>
+    <nav className="flex flex-col sm:flex-row sm:space-x-6 text-center">
+      <Link to="/notas" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
+        Notas
+      </Link>
+      <Link to="/calcular-promedio" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
+        Calcular Promedio
+      </Link>
+      <Link to="/escala-de-notas" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
+        Escala De Notas
+      </Link>
+      <Link to="/fechas" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
+        Fechas
+      </Link>
+    </nav>
+    <div className="flex flex-col items-center md:flex-row md:gap-4">
+    <Link to="/login" className="text-gray-700 transition duration-500 hover:text-emerald-500 inline-block mb-2 md:mb-0">
+      Login
+    </Link>
+    <Link to="/register" className="flex items-center">
+        <button className="bg-emerald-500 transition duration-500 text-white px-4 py-2 rounded-lg shadow-xl hover:bg-emerald-400">
+          Register
+        </button>
+      </Link>
+    </div>
+  </header>
   )
 }
