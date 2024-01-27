@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4171350ec4b79902178f0256550227766417406ff5abd2f6e5ab13ed37cbded8"
+            "sha256": "b2ecfc9a1d2c002c823c8a158085c7f23b9131cdb8928f6550ece328924b24be"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -424,6 +424,14 @@
             "markers": "python_version > '2.7'",
             "version": "==6.4"
         },
+        "typing-extensions": {
+            "hashes": [
+                "sha256:23478f88c37f27d76ac8aee6c905017a143b0b1b886c3c9f66bc2fd94f9f5783",
+                "sha256:af72aea155e91adfc61c3ae9e0e342dbc0cba726d6cba4b6c72c1f34e47291cd"
+            ],
+            "markers": "python_version < '3.11'",
+            "version": "==4.9.0"
+        },
         "tzdata": {
             "hashes": [
                 "sha256:aa3ace4329eeacda5b7beb7ea08ece826c28d761cda36e747cfbf97996d39bf3",
@@ -447,6 +455,13 @@
             ],
             "markers": "python_version >= '3.8'",
             "version": "==2.1.0"
+        },
+        "validations": {
+            "hashes": [
+                "sha256:4c077aa6d96b72f216a2d9f6d01ed825923b40f2d652eb5bad7d4d0c9d002f32"
+            ],
+            "index": "pypi",
+            "version": "==0.1.1"
         },
         "vite": {
             "hashes": [
