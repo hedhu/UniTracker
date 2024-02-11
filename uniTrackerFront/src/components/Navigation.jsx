@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { AuthContext } from '../contexts/authContext';
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -11,109 +12,119 @@ const client = axios.create({
 });
 
 
-export function Navigation() {
-  const [currentUser, setCurrentUser] = useState();
-  const [asignaturas, setAsignaturas] = useState([]);
+export function Navigation({ darkMode, toggleDarkMode }) {
+  const { currentUser, setCurrentUser, login, logout } = useContext(AuthContext);
+  const [mobileNavVisible, setMobileNavVisible] = useState(false);
 
   useEffect(() => {
-
-    getUser();
-    getAsignaturas();
-
+    const checkUser = async () => {
+      // Make a GET request to your Django server with axios
+      const response = await client.get('/unitracker/user/');
+      setCurrentUser(response.data);
+    };
+  
+    checkUser();
   }, []);
 
-  const getUser = () => {
-    client.get('unitracker/user/') 
-      .then( (res) => setCurrentUser(true) )
-      .catch((err) => {
-          setCurrentUser(false)
-    });
+  useEffect(() => {
+    // Al cargar la página, verifica si hay un usuario en el almacenamiento local
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+    } else {
+      checkUser();
+    }
+  }, []);
+  
+  useEffect(() => {
+    // Cada vez que currentUser cambia, actualiza el almacenamiento local
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  }, [currentUser]);
+  
+  const checkUser = () => {
+    client.get('/unitracker/user/')
+      .then((res) => setCurrentUser(true))
+      .catch(() => setCurrentUser(false));
   }
 
-  const getAsignaturas = () => {
-    client.get('unitracker/api/asignaturas/') 
-      .then( (res) => { 
-        setAsignaturas(res.data)  
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-    });
-  }
+  
+  const toggleMobileNav = () => {
+    setMobileNavVisible(!mobileNavVisible);
+  };
 
-  function submitLogout(e) {
-    e.preventDefault();
-    client.post(
-      "/unitracker/logout",
-      {withCredentials: true}
-    ).then(function(res) {
-      setCurrentUser(false);
-    });
-  }
+  const hideMobileNav = () => {
+    setMobileNavVisible(false);
+  };
 
-  if (currentUser) {
-    return (
-      <header className="flex flex-col sm:flex-row justify-between items-center px-16 h-[80px]">
+  const handleLogout = () => {
+    logout();
+  };
+
+  return (
+    <>
+      <button
+        className={`md:hidden fixed top-4 right-4 z-50 bg-emerald-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-emerald-400 focus:outline-none`}
+        onClick={toggleMobileNav}
+      >
+        {mobileNavVisible ? "X" : "="}
+      </button>
+      <header
+        className={`md:flex sm:w-3/12 md:w-full md:shadow-none shadow-md md:rounded-none fixed top-0 left-0 w-full z-50 flex flex-col sm:flex-row justify-between items-center lg:px-16 px-16 md:p-4 md:h-[80px] pt-4 pb-4 md:pb-0 md:pt-0 transition duration-500 ${(mobileNavVisible) ? (darkMode ? 'dark bg-gray-900' : 'bg-[#F9F9F9]') : 'hidden'}`}>
         <div className="flex items-center mb-3 sm:mb-0">
-          <Link to="/" className="text-black text-xl font-bold hover:text-gray-800">
+          <Link to="/" className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-black'}`}>
             <h1><span className="text-emerald-500">Uni</span>Tracker</h1>
           </Link>
         </div>
-        <nav className="flex flex-col sm:flex-row sm:space-x-6 text-center">
-          <Link to="/notas" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
+        <nav className="flex flex-col sm:flex-row sm:space-x-6 text-center md:items-center  md:ml-4 md:mr-4">
+          <Link to="/notas" className={`hover:text-emerald-500 transition-colors text-sm duration-300 mb-2 sm:mb-0 ${darkMode ? 'text-white' : 'text-gray-700'}`} style={{ whiteSpace: 'nowrap' }}>
             Notas
           </Link>
-          <Link to="/calcular-promedio" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
+          <Link to="/calcular-promedio" className={`hover:text-emerald-500  text-sm  transition-colors duration-300 mb-2 sm:mb-0 ${darkMode ? 'text-white' : 'text-gray-700'}`} style={{ whiteSpace: 'nowrap' }}>
             Calcular Promedio
           </Link>
-          <Link to="/escala-de-notas" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
+          <Link to="/escala-de-notas" className={`hover:text-emerald-500 text-sm  transition-colors duration-300 mb-2 sm:mb-0 ${darkMode ? 'text-white' : 'text-gray-700'}`} style={{ whiteSpace: 'nowrap' }}>
             Escala De Notas
           </Link>
-          <Link to="/fechas" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
+          <Link to="/fechas" className={`hover:text-emerald-500 text-sm  transition-colors duration-300 mb-2 sm:mb-0 ${darkMode ? 'text-white' : 'text-gray-700'}`} style={{ whiteSpace: 'nowrap' }}>
             Fechas
           </Link>
         </nav>
+
         <div className="flex flex-col items-center md:flex-row md:gap-4">
-        <form onSubmit={e => submitLogout(e)} className="flex items-center">
-            <button type='submit' className="bg-emerald-500 transition duration-500 text-white px-4 py-2 rounded-lg shadow-xl hover:bg-emerald-400">
-              LogOut
-            </button>
-          </form>
+          <button onClick={toggleDarkMode} className={`bg-emerald-500 py-2 md:py-0  md:bg-transparent px-2 md:px-0 md:hover:text-emerald-500 rounded-lg transition text-sm duration-500 inline-block mb-2 md:mb-0 ${darkMode ? 'text-white' : 'md:text-gray-700 text-white'}`}>
+            {darkMode ? 'Modo Claro' : 'Modo Oscuro'}
+          </button>
+          {currentUser && (
+            <form onSubmit={handleLogout} className="flex items-center">
+              <button type='submit' className="bg-emerald-500 transition duration-500 text-white px-4 py-2 rounded-lg shadow-xl hover:bg-emerald-400">
+                Log out
+              </button>
+            </form>
+          )}
+
+          {/* Botón de Registro y Login */}
+          {!currentUser && (
+            <>
+              <div className={`hidden md:block border text-sm  border-emerald-500 rounded-lg px-4 py-2 ${darkMode ? 'dark:border-gray-700' : ''}`}>
+                <Link to="/login" className={`transition duration-500 hover:text-emerald-500 inline-block ${darkMode ? 'text-white' : 'text-gray-700'}`}>
+                  Login
+                </Link>
+              </div>
+              <Link to="/register" className="hidden md:block flex items-center">
+                <button className={`transition text-sm  duration-500 px-4 py-2 rounded-lg shadow-xl ${darkMode ? 'bg-emerald-500 text-white hover:bg-emerald-400 border-2 border-emerald-500 hover:border-emerald-400' : 'bg-emerald-500 text-white hover:bg-emerald-400 border-2 border-emerald-500 hover:border-emerald-400'}`}>
+                  Register
+                </button>
+              </Link>
+            </>
+          )}
         </div>
       </header>
-    )
-  } 
-  return (
-    <header className="flex flex-col sm:flex-row justify-between items-center px-16 h-[80px]">
-    <div className="flex items-center mb-3 sm:mb-0">
-      <Link to="/" className="text-black text-xl font-bold hover:text-gray-800">
-        <h1><span className="text-emerald-500">Uni</span>Tracker</h1>
-      </Link>
-    </div>
-    <nav className="flex flex-col sm:flex-row sm:space-x-6 text-center">
-      <Link to="/notas" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
-        Notas
-      </Link>
-      <Link to="/calcular-promedio" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
-        Calcular Promedio
-      </Link>
-      <Link to="/escala-de-notas" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
-        Escala De Notas
-      </Link>
-      <Link to="/fechas" className="text-gray-700 hover:text-emerald-500 transition-colors duration-300 mb-2 sm:mb-0">
-        Fechas
-      </Link>
-    </nav>
-    <div className="flex flex-col items-center md:flex-row md:gap-4">
-    <Link to="/login" className="text-gray-700 transition duration-500 hover:text-emerald-500 inline-block mb-2 md:mb-0">
-      Login
-    </Link>
-    <Link to="/register" className="flex items-center">
-        <button className="bg-emerald-500 transition duration-500 text-white px-4 py-2 rounded-lg shadow-xl hover:bg-emerald-400">
-          Register
-        </button>
-      </Link>
-    </div>
-  </header>
-  )
+      {mobileNavVisible && (
+        <div
+          className="fixed inset-0 z-40 bg-black opacity-50"
+          onClick={hideMobileNav}
+        />
+      )}
+    </>
+  );
 }

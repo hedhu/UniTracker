@@ -1,18 +1,37 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { IndexPage } from './pages/Index';
 import { LoginPage } from './pages/Login';
 import { Navigation } from './components/Navigation';
+import { AuthProvider } from './contexts/authContext';
 
 function App() {
+
+  const [darkMode, setDarkMode] = useState(false);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
-    <BrowserRouter>
-      <Navigation />
-      <Routes>
-        <Route path='/' element={<IndexPage />}/>
-        <Route path='/login' element={<LoginPage />}/>
-      </Routes>
-    </BrowserRouter>
-  )
+    <AuthProvider>
+      <Router>
+        <div className={`App ${darkMode ? 'dark' : ''}`}>
+          <Navigation
+            darkMode={darkMode}
+            toggleDarkMode={toggleDarkMode}
+          />
+          <Routes>
+            <Route path="/" element={<IndexPage darkMode={darkMode} />} />
+            <Route
+              path="/login"
+              element={<LoginPage darkMode={darkMode}/>}
+            />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
